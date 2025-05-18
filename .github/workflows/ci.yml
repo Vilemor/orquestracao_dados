@@ -1,0 +1,117 @@
+name: Pipeline CI
+
+on:
+  push:
+    branches: ["*"]
+  pull_request:
+    branches: ["*"]
+
+jobs:
+  build:
+    name: 🔧 Instalar dependências
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout do código
+      uses: actions/checkout@v3
+
+    - name: Configurar Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.10"
+
+    - name: Instalar Poetry e dependências
+      run: |
+        pip install poetry
+        poetry install
+
+  lint:
+    name: 🧹 Lint e formatação
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-python@v4
+      with:
+        python-version: "3.10"
+    - run: |
+        pip install poetry
+        poetry install
+        poetry run flake8 src tests
+        poetry run black --check src tests
+
+  test_stage:
+    name: 🔬 Testar camada Stage
+    runs-on: ubuntu-latest
+    needs: lint
+
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-python@v4
+      with:
+        python-version: "3.10"
+    - run: |
+        pip install poetry
+        poetry install
+        poetry run pytest tests/test_stage.py
+
+  test_sor:
+    name: 🔬 Testar camada SOR
+    runs-on: ubuntu-latest
+    needs: test_stage
+
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-python@v4
+      with:
+        python-version: "3.10"
+    - run: |
+        pip install poetry
+        poetry install
+        poetry run pytest tests/test_sor.py
+
+  test_sot:
+    name: 🔬 Testar camada SOT
+    runs-on: ubuntu-latest
+    needs: test_sor
+
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-python@v4
+      with:
+        python-version: "3.10"
+    - run: |
+        pip install poetry
+        poetry install
+        poetry run pytest tests/test_sot.py
+
+  test_mesh:
+    name: 🔬 Testar camada Mesh
+    runs-on: ubuntu-latest
+    needs: test_sot
+
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-python@v4
+      with:
+        python-version: "3.10"
+    - run: |
+        pip install poetry
+        poetry install
+        poetry run pytest tests/test_mesh.py
+
+  test_end_to_end:
+    name: ✅ Teste de ponta a ponta
+    runs-on: ubuntu-latest
+    needs: test_mesh
+
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-python@v4
+      with:
+        python-version: "3.10"
+    - run: |
+        pip install poetry
+        poetry install
+        poetry run pytest tests/test_end_to_end.py
