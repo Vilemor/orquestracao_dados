@@ -1,8 +1,31 @@
-import utils
+from utils.utilitario import (
+    get_spark_session,
+    stop_spark_session,
+    salvar_dataframe_como_parquet,
+    schema_csv
+)
+
+
+def carregar_dados_brutos_csv(caminho_arquivo: str, spark, schema):
+    """
+    Função para carregar dados brutos do csv e converter em um dataframe
+    """
+    df_dados_brutos = spark.read.options(
+        header='True',
+        inferSchema='True',
+        delimiter=',',
+        schema=schema
+    ).csv(caminho_arquivo)
+    return df_dados_brutos
 
 
 if __name__:
-    spark = utils.get_spark_session()
-    df_dados_brutos = utils.carregar_dados_brutos_csv("data/dados_brutos.csv", spark)
-    utils.salvar_dataframe_como_json(df_dados_brutos, 'outputs/dados_brutos')
-    utils.stop_spark_session()
+    spark = get_spark_session()
+    schema = schema_csv()
+    df_dados_brutos = carregar_dados_brutos_csv(
+        caminho_arquivo="data/dados_brutos.csv",
+        spark=spark,
+        schema=schema
+    )
+    salvar_dataframe_como_parquet(df_dados_brutos, "outputs/sor_dado_bruto")
+    stop_spark_session()

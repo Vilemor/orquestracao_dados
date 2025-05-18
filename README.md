@@ -64,4 +64,82 @@ O pipeline segue uma arquitetura em camadas, onde cada etapa é responsável por
 ├── 📄 sor_sot.py
 ├── 📄 sot_mesh.py
 ├── 📄 stage_sor.py
+📂 utils
 └── 📄 utils.py
+└── 📄 json_logger.py
+---
+
+## JSON Logger Python
+
+
+### Logger estruturado em JSON para aplicações Python, com agrupamento visual, contexto, rastreamento de exceções e gravação opcional em arquivo.
+
+
+### Exemplo de Uso
+```python
+from json_logger import log_json
+
+# Log de sucesso (INFO)
+log_json("Processo finalizado com sucesso.")
+
+# Log de aviso (WARNING)
+log_json("Arquivo de configuração não encontrado, usando valores padrão.", level="WARNING")
+
+# Log de erro (ERROR)
+try:
+    1 / 0
+except Exception as e:
+    log_json("Erro ao executar operação crítica.", level="ERROR", exc=e)
+```
+
+
+### Exemplo de Saída
+
+```json
+==================== ORQUESTRACAO ==================== 
+Log de Sucesso (INFO)
+{ 
+    "timestamp": "2025-05-18T15:03:02.700714-03:00", 
+    "level": "INFO", 
+    "log_groups": "orquestracao", 
+    "message": "Processo finalizado com sucesso.",
+    "execution_id": "d4b824e1-c2bb-4c4f-99d0-6ce72651beea",
+    "function": "__main__", 
+    "file": "main.py:10" 
+}
+
+Log de Aviso (WARNING)
+{ 
+    "timestamp": "2025-05-18T15:03:03.123456-03:00",
+    "level": "WARNING", 
+    "log_groups": "orquestracao", 
+    "message": "Arquivo de configuração não encontrado, usando valores padrão.", 
+    "execution_id": "d4b824e1-c2bb-4c4f-99d0-6ce72651beea", 
+    "function": "__main__", 
+    "file": "main.py:13" 
+}
+
+Log de Erro (ERROR)
+
+{
+    "timestamp": "2025-05-18T15:15:51.738759-03:00",
+    "level": "ERROR",
+    "log_groups": "orquestracao",
+    "message": "Erro ao executar operação crítica.",
+    "execution_id": "d4b824e1-c2bb-4c4f-99d0-6ce72651beea",
+    "function": "main",
+    "file": "main.py",
+    "context": {
+        "input": "1/0"
+    },
+    "error_location": "main.py:17",
+    "stacktrace": "ZeroDivisionError: division by zero"
+}
+```
+
+### Recursos
+- Agrupamento visual por grupo de log (group)
+- Contexto adicional via parâmetro context
+- Rastreamento detalhado de exceções (exc)
+- Gravação opcional em arquivo (log_to_file)
+- Identificação de função, arquivo e linha do log
