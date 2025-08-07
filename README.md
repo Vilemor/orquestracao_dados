@@ -1,7 +1,7 @@
 # orquestracao_dados
 repositório de treinamento para orquestração e manipulação de dados com pysark
 
-
+```python
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import *
 from pyspark.sql.window import Window
@@ -41,3 +41,4 @@ df_resultado = df_sem_duplicidade.withColumn("total_acumulado", sum("qtd").over(
 
 # Mostra resultado
 df_resultado.orderBy("data").show(truncate=False)
+```
